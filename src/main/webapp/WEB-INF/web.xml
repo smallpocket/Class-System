@@ -4,6 +4,41 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1">
   <display-name>class_system</display-name>
+
+    <!--shiro-->
+    <listener>
+        <listener-class>org.apache.shiro.web.env.EnvironmentLoaderListener</listener-class>
+    </listener>
+    <filter>
+        <filter-name>ShiroFilter</filter-name>
+        <filter-class>org.apache.shiro.web.servlet.ShiroFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>ShiroFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+        <dispatcher>INCLUDE</dispatcher>
+        <dispatcher>ERROR</dispatcher>
+    </filter-mapping>
+    <!--shiro-->
+
+    <!--更改了filyer-name的名字-->
+    <!-- druid的web监控-->
+    <filter>
+        <filter-name>DruidWebStatFilter</filter-name>
+        <filter-class>com.alibaba.druid.support.http.WebStatFilter</filter-class>
+        <init-param>
+            <param-name>exclusions</param-name>
+            <param-value>*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*,/rs/*</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>DruidWebStatFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
   <filter>
     <filter-name>nutz</filter-name>
     <filter-class>org.nutz.mvc.NutFilter</filter-class>
@@ -11,6 +46,11 @@
       <param-name>modules</param-name>
       <param-value>com.system.MainModule</param-value>
     </init-param>
+      <!--druid或/rs下的路径,就无条件跳过NutFilter-->
+      <init-param>
+          <param-name>exclusions</param-name>
+          <param-value>/rs/*,/druid/*</param-value>
+      </init-param>
   </filter>
 
   <filter-mapping>
@@ -19,7 +59,24 @@
     <dispatcher>REQUEST</dispatcher>
     <dispatcher>FORWARD</dispatcher>
   </filter-mapping>
+
+  <error-page>
+    <error-code>500</error-code>
+    <location>/WEB-INF/jsp/500.jsp</location>
+  </error-page>
+
+    <!--druid的页面-->
+    <servlet>
+        <servlet-name>DruidStatView</servlet-name>
+        <servlet-class>com.alibaba.druid.support.http.StatViewServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DruidStatView</servlet-name>
+        <url-pattern>/druid/*</url-pattern>
+    </servlet-mapping>
+
   <welcome-file-list>
+
     <welcome-file>index.html</welcome-file>
     <welcome-file>index.htm</welcome-file>
     <welcome-file>index.jsp</welcome-file>
